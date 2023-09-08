@@ -223,7 +223,7 @@ AddEventHandler('Sick-2Step:UninstallClient',function(plate)
 	if alert == 'confirm' then
 		if lib.progressBar({
 			duration = 5000,
-			label = 'Checking 2Step',
+			label = 'Removing 2Step',
 			useWhileDead = false,
 			canCancel = true,
 			disable = {
