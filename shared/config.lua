@@ -17,10 +17,10 @@ Config = {
 		"exhaust_3",
 		"exhaust_4"
 	},
-	
+
 	p_flame_particle = "veh_backfire",
 
 	p_flame_particle_asset = "core" ,
 	p_flame_size = 3.0,
-	
+
 }

@@ -52,7 +52,7 @@ Citizen.CreateThread(function()
 							TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
 							activated = true
 							Wait(BackFireDelay)
-						else 
+						else
 							activated = false
 						end
 					end
@@ -106,7 +106,7 @@ AddEventHandler("c_eff_flames", function(c_veh)
 end)
 
 function Notif( type, text )
-	if type == 1 then 
+	if type == 1 then
 		lib.notify({
 			title = '2Step System',
 			description = text,
@@ -135,9 +135,9 @@ AddEventHandler('Sick-2Step:GetPlateFromClient',function(police)
 	if not police then
 		local ped = PlayerPedId()
 		local pedVehicle = GetVehiclePedIsIn(ped)
-		if not IsPedInAnyVehicle(ped, false) then 
+		if not IsPedInAnyVehicle(ped, false) then
 			Notif(3, 'You Need to be in a Vehicle!')
-			return 
+			return
 		else
 			local plate = GetVehicleNumberPlateText(pedVehicle)
 			if lib.progressBar({
@@ -150,20 +150,20 @@ AddEventHandler('Sick-2Step:GetPlateFromClient',function(police)
 					combat = true,
 					car = true,
 				}
-				}) 
-			then 
+				})
+			then
 				TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
-			else 
-				print('Do stuff when cancelled') 
+			else
+				print('Do stuff when cancelled')
 			end
-			
+
 		end
 	else
 		local ped = PlayerPedId()
 		local pedVehicle = GetVehiclePedIsIn(ped)
-		if not IsPedInAnyVehicle(ped, false) then 
+		if not IsPedInAnyVehicle(ped, false) then
 			Notif(3, 'You Need to be in a Vehicle!')
-			return 
+			return
 		else
 			local plate = GetVehicleNumberPlateText(pedVehicle)
 			if lib.progressBar({
@@ -176,20 +176,20 @@ AddEventHandler('Sick-2Step:GetPlateFromClient',function(police)
 					combat = true,
 					car = true,
 				}
-				}) 
-			then 
+				})
+			then
 				TriggerServerEvent('Sick-2Step:Police2Step', plate)
-			else 
-				print('Do stuff when cancelled') 
+			else
+				print('Do stuff when cancelled')
 			end
-			
+
 		end
 	end
 	local ped = PlayerPedId()
 	local pedVehicle = GetVehiclePedIsIn(ped)
-	if not IsPedInAnyVehicle(ped, false) then 
+	if not IsPedInAnyVehicle(ped, false) then
 		Notif(3, 'You Need to be in a Vehicle!')
-		return 
+		return
 	else
 		local plate = GetVehicleNumberPlateText(pedVehicle)
 		if lib.progressBar({
@@ -202,13 +202,13 @@ AddEventHandler('Sick-2Step:GetPlateFromClient',function(police)
 				combat = true,
 				car = true,
 			}
-			}) 
-		then 
+			})
+		then
 			TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
-		else 
-			print('Do stuff when cancelled') 
+		else
+			print('Do stuff when cancelled')
 		end
-		
+
 	end
 end)
 
@@ -231,11 +231,11 @@ AddEventHandler('Sick-2Step:UninstallClient',function(plate)
 				combat = true,
 				car = true,
 			}
-			}) 
-		then 
+			})
+		then
 			TriggerServerEvent('Sick-2Step:UninstallServer', plate)
-		else 
-			print('Do stuff when cancelled') 
+		else
+			print('Do stuff when cancelled')
 		end
 	end
 end)
