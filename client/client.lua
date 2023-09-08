@@ -1,8 +1,8 @@
-	--[[
-		Antilag & 2-Step Script
-			By Silence & Samuel_
-		But Client stuff...
-	]]
+--[[
+	Antilag & 2-Step Script
+		By Silence & Samuel_
+	But Client stuff...
+]]
 RegisterNetEvent("2step:Anti-lag")
 RegisterNetEvent("c_eff_flames")
 
@@ -32,8 +32,8 @@ AddEventHandler("2step:Anti-lag", function()
 end)
 
 Citizen.CreateThread(function()
-    while true do
-        local ped = PlayerPedId()
+	while true do
+		local ped = PlayerPedId()
 		if IsControlPressed(1, Config.twoStepControl) and antilag then
 			if IsPedInAnyVehicle(ped) then
 				local pedVehicle = GetVehiclePedIsIn(ped)
@@ -93,7 +93,7 @@ Citizen.CreateThread(function()
 				SetVehicleTurboPressure(pedVehicle, 25)
 			end
 		end
-	  Wait(0)
+		Wait(0)
 	end
 end)
 

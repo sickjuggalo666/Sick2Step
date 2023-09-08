@@ -5,7 +5,10 @@ client_scripts {
     'client.lua'
 }
 
-server_script {'server.lua','@oxmysql/lib/MySQL.lua'}
+server_script {
+    'server.lua',
+    '@oxmysql/lib/MySQL.lua'
+}
 
 shared_scripts {
     '@ox_lib/init.lua',

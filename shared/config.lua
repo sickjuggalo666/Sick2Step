@@ -1,6 +1,5 @@
 Config = {
-	ESX = true, -- only for usable item this is needed!
-	
+	Noty = 'ox', -- 'ox' or 'custom' change in client.lua/server.lua
 		-- 21 (Left Shift by default)
 	twoStepControl = 21,
 
@@ -16,13 +15,12 @@ Config = {
 		"exhaust",
 		"exhaust_2",
 		"exhaust_3",
-		"exhaust_4"	
+		"exhaust_4"
 	},
 	
 	p_flame_particle = "veh_backfire",
 
 	p_flame_particle_asset = "core" ,
-
-	p_flame_size = 2.4,
+	p_flame_size = 3.0,
 	
 }

@@ -1,4 +1,5 @@
 local Inventory = exports.ox_inventory
+ESX = exports['es_extended']:getSharedObject()
 
 RegisterServerEvent("eff_flames")
 AddEventHandler("eff_flames", function(entity)
@@ -6,39 +7,22 @@ AddEventHandler("eff_flames", function(entity)
 end)
 
 lib.addCommand('2step', {
-    help = 'Turn on/off 2Step Module',
+    help = 'Set 2Step Modules as Active/Inactive',
+    params = {},
 }, function(source, args, raw)
-    TriggerClientEvent("2step:Anti-lag", source)
+	TriggerClientEvent("2step:Anti-lag", source)
 end)
 
-if Config.ESX then
-	ESX = exports['es_extended']:getSharedObject()
-	ESX.RegisterUsableItem('2step', function(playerId)
-		TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, false)
-	end)
+ESX.RegisterUsableItem('2step', function(playerId)
+	TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, false)
+end)
 
-	ESX.RegisterUsableItem('2step_checker', function(playerId)
-		local xPlayer = ESX.GetPlayerFromId(playerId)
-		if xPlayer.getJob().name == 'police' then
-			TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, true)
-		end
-	end)
-else
-	QBCore = exports['qb-core']:GetCoreObject()
-	QBCore.Functions.CreateUseableItem('2step', function(source, item)
-		local Player = QBCore.Functions.GetPlayer(source)
-		if not Player.Functions.GetItemByName(item.name) then return end
-		TriggerClientEvent('Sick-2Step:GetPlateFromClient', source, false)
-	end)
-	QBCore.Functions.CreateUseableItem('2step_checker', function(source, item)
-		local Player = QBCore.Functions.GetPlayer(source)
-		if not Player.Functions.GetItemByName(item.name) then return end
-		local xPlayer = ESX.GetPlayerFromId(playerId)
-		if Player.PlayerData.job.name == 'police' then
-			TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, true)
-		end
-	end)
-end
+ESX.RegisterUsableItem('2step_checker', function(playerId)
+	local xPlayer = ESX.GetPlayerFromId(playerId)
+	if xPlayer.getJob().name == 'police' then
+		TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, true)
+	end
+end)
 
 RegisterNetEvent('Sick-2Step:Set2StepVeh')
 AddEventHandler('Sick-2Step:Set2StepVeh',function(plate)
@@ -50,12 +34,12 @@ AddEventHandler('Sick-2Step:Set2StepVeh',function(plate)
 			local row = response[i]
 			if row.twostep == 1 then
 				TriggerClientEvent('Sick-2Step:UninstallClient', src, plate)
-				SNotif(src, 3, 'Veh already Has 2Step!')
+				SNotify(src, 3, 'Veh already Has 2Step!')
 			else
 				MySQL.update('UPDATE `owned_vehicles` SET `twostep` = ? WHERE `plate` = ?', {
 					1, plate
 				})
-				SNotif(src, 1, 'Installed Successfully! { /2step } to use')
+				SNotify(src, 1, 'Installed Successfully! { /2step } to use')
 				Inventory:RemoveItem(src, '2step', 1)
 				Snotify(1, '2 Step Was Added To Veh!')
 			end
@@ -73,6 +57,7 @@ AddEventHandler('Sick-2Step:Police2Step',function(plate)
 			local row = response[i]
 			if row.twostep == 1 then
 				SNotify(src, 2, 'Vehicle Has 2Step Module Installed!')
+				TriggerClientEvent('Sick-2Step:UninstallClient', src, plate)
 			else
 				Snotify(src, 2, 'Vehicle Doesn\'t Have a 2Step Module Installed!')
 			end
@@ -105,25 +90,29 @@ lib.callback.register('2step:Anti-lagCheck', function(source,plate)
 	return return_var
 end)
 
-function SNotif(source,type,text)
-	if type == 1 then
-		TriggerClientEvent('ox_lib:notify', source, {
-			title = '2Step Module',
-			description = text,
-			type = 'success'
-		})
-	elseif type == 2 then
-		TriggerClientEvent('ox_lib:notify', source, {
-			title = '2Step Module',
-			description = text,
-			type = 'inform'
-		})
-	elseif type == 3 then
-		TriggerClientEvent('ox_lib:notify', source, {
-			title = '2Step Module',
-			description = text,
-			type = 'error'
-		})
+function SNotify(source,type,text)
+	if Config.Noty == 'ox' then
+		if type == 1 then
+			TriggerClientEvent('ox_lib:notify', source, {
+				title = '2Step Module',
+				description = text,
+				type = 'success'
+			})
+		elseif type == 2 then
+			TriggerClientEvent('ox_lib:notify', source, {
+				title = '2Step Module',
+				description = text,
+				type = 'inform'
+			})
+		elseif type == 3 then
+			TriggerClientEvent('ox_lib:notify', source, {
+				title = '2Step Module',
+				description = text,
+				type = 'error'
+			})
+		end
+	elseif Config.Noty == 'custom' then
+
 	end
 end
 
