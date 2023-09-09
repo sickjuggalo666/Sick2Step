@@ -41,7 +41,7 @@ AddEventHandler('Sick-2Step:Set2StepVeh',function(plate)
 				})
 				SNotify(src, 1, 'Installed Successfully! { /2step } to use')
 				Inventory:RemoveItem(src, '2step', 1)
-				Snotify(1, '2 Step Was Added To Veh!')
+				SNotify(1, '2 Step Was Added To Veh!')
 			end
 		end
 	end)
