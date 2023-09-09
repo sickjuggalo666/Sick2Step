@@ -9,6 +9,7 @@ RegisterNetEvent("c_eff_flames")
 local activated = false
 local antilag = false
 local AntilagDisplay = false
+local currentGear = 0
 
 AddEventHandler("2step:Anti-lag", function()
 	local ped = PlayerPedId()
@@ -84,6 +85,26 @@ Citizen.CreateThread(function()
 					else
 						antilag = false
 					end
+				end
+			end
+		end
+		if antilag then
+			local ped = PlayerPedId()
+			local pedVehicle = GetVehiclePedIsIn(ped)
+		
+			if pedVehicle ~= 0 then
+				local newGear = GetVehicleCurrentGear(pedVehicle)
+		
+				if newGear ~= currentGear then
+					currentGear = newGear
+					local backfire = math.random(#Config.Backfires)
+					local file = Config.Backfires[backfire]
+					TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
+					TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
+				end
+			else
+				if currentGear ~= 0 then
+					currentGear = 0
 				end
 			end
 		end
