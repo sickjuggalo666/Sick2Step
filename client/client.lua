@@ -283,3 +283,67 @@ AddEventHandler('Sick-2StepCL:PlayWithinDistance', function(otherPlayerCoords, m
 		end
 	end
 end)
+
+
+exports('2step', function(data, slot)
+	exports.ox_inventory:useItem(data, function(data)
+		if data then
+			local ped = PlayerPedId()
+			local pedVehicle = GetVehiclePedIsIn(ped)
+			if not IsPedInAnyVehicle(ped, false) then 
+				Notif(3, 'You Need to be in a Vehicle!')
+				return 
+			else
+				print('Here 1')
+				local plate = GetVehicleNumberPlateText(pedVehicle)
+				if lib.progressBar({
+					duration = 5000,
+					label = 'Checking 2Step',
+					useWhileDead = false,
+					canCancel = true,
+					disable = {
+						move = true,
+						combat = true,
+						car = true,
+					}
+					}) 
+				then 
+					TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
+				else 
+					return
+				end
+			end
+		end
+	end)
+end)
+
+exports('2step_checker', function(data, slot)
+	exports.ox_inventory:useItem(data, function(data)
+		if data then
+			local ped = PlayerPedId()
+			local pedVehicle = GetVehiclePedIsIn(ped)
+			if not IsPedInAnyVehicle(ped, false) then 
+				Notif(3, 'You Need to be in a Vehicle!')
+				return 
+			else
+				local plate = GetVehicleNumberPlateText(pedVehicle)
+				if lib.progressBar({
+					duration = 5000,
+					label = 'Checking 2Step',
+					useWhileDead = false,
+					canCancel = true,
+					disable = {
+						move = true,
+						combat = true,
+						car = true,
+					}
+					}) 
+				then 
+					TriggerServerEvent('Sick-2Step:Police2Step', plate)
+				else 
+					return
+				end
+			end
+		end
+	end)
+end)

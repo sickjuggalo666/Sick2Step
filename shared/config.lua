@@ -1,4 +1,6 @@
 Config = {
+	UseOxInv = true, -- this is checked first (if set true ESX/QBCore wont matter)
+	ESX = true, -- false for QBCore
 	Noty = 'ox', -- 'ox' or 'custom' change in client.lua/server.lua
 		-- 21 (Left Shift by default)
 	twoStepControl = 21,

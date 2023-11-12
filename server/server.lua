@@ -1,5 +1,4 @@
 local Inventory = exports.ox_inventory
-ESX = exports['es_extended']:getSharedObject()
 
 RegisterServerEvent("eff_flames")
 AddEventHandler("eff_flames", function(entity)
@@ -13,16 +12,38 @@ lib.addCommand('2step', {
 	TriggerClientEvent("2step:Anti-lag", source)
 end)
 
-ESX.RegisterUsableItem('2step', function(playerId)
-	TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, false)
-end)
+if not Config.UseOxInv then
+	if Config.ESX then
+		ESX = exports['es_extended']:getSharedObject()
+		ESX.RegisterUsableItem('2step', function(playerId)
+			TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, false)
+		end)
 
-ESX.RegisterUsableItem('2step_checker', function(playerId)
-	local xPlayer = ESX.GetPlayerFromId(playerId)
-	if xPlayer.getJob().name == 'police' then
-		TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, true)
+		ESX.RegisterUsableItem('2step_checker', function(playerId)
+			local xPlayer = ESX.GetPlayerFromId(playerId)
+			if xPlayer.getJob().name == 'police' then
+				TriggerClientEvent('Sick-2Step:GetPlateFromClient', playerId, true)
+			end
+		end)
+	else
+		QBCore = exports['qb-core']:GetCoreObject()
+		QBCore.Functions.CreateUseableItem('2step', function(source, item)
+			local Player = QBCore.Functions.GetPlayer(source)
+			if not Player.Functions.GetItemByName(item.name) then return end
+			if Player.PlayerData.job.name == 'police' then
+				TriggerClientEvent('Sick-2Step:GetPlateFromClient', source, false)
+			end
+		end)
+		
+		QBCore.Functions.CreateUseableItem('2step_checker', function(source, item)
+			local Player = QBCore.Functions.GetPlayer(source)
+			if not Player.Functions.GetItemByName(item.name) then return end
+			if Player.PlayerData.job.name == 'police' then
+				TriggerClientEvent('Sick-2Step:GetPlateFromClient', source, true)
+			end
+		end)
 	end
-end)
+end
 
 RegisterNetEvent('Sick-2Step:Set2StepVeh')
 AddEventHandler('Sick-2Step:Set2StepVeh',function(plate)
