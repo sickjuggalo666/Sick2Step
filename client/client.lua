@@ -11,110 +11,118 @@ local antilag = false
 local AntilagDisplay = false
 local currentGear = 0
 
-AddEventHandler("2step:Anti-lag", function()
-	local ped = PlayerPedId()
-	if antilag == false then
-		local pedVehicle = GetVehiclePedIsIn(ped)
-		if IsPedInAnyVehicle(ped) then
-			local plate = GetVehicleNumberPlateText(pedVehicle)
-			lib.callback('2step:Anti-lagCheck', false, function(twostep)
-				if twostep then
-					antilag = true
-					Notif(2, "Anti-Lag has been Enabled!")
-				else
-					Notif(3, 'Need 2Step Module In order to use!')
-				end
-			end,plate)
-		end
-	else
-		antilag = false
-		Notif(2, "Anti-Lag has been Disabled!")
-	end
-end)
+exports.ox_inventory:displayMetadata({
+    owner = 'Original Plate',
+})
 
-Citizen.CreateThread(function()
-	while true do
-		local ped = PlayerPedId()
-		if IsControlPressed(1, Config.twoStepControl) and antilag then
-			if IsPedInAnyVehicle(ped) then
-				local pedVehicle = GetVehiclePedIsIn(ped)
-				local pedPos = GetEntityCoords(ped)
-				local vehiclePos = GetEntityCoords(pedVehicle)
-				local RPM = GetVehicleCurrentRpm(GetVehiclePedIsIn(PlayerPedId()))
+local function Start2StepLoop()
+	Citizen.CreateThread(function()
+		while antilag do
+			local ped = PlayerPedId()
+			if IsControlPressed(1, Config.twoStepControl) and antilag then
+				if IsPedInAnyVehicle(ped) then
+					local pedVehicle = GetVehiclePedIsIn(ped)
+					local pedPos = GetEntityCoords(ped)
+					local vehiclePos = GetEntityCoords(pedVehicle)
+					local RPM = GetVehicleCurrentRpm(GetVehiclePedIsIn(PlayerPedId()))
 
-				if GetPedInVehicleSeat(pedVehicle, -1) == ped then
-					if not IsEntityInAir(pedVehicle) then
-						local vehicleModel = GetEntityModel(GetVehiclePedIsIn(PlayerPedId()))
-						local BackFireDelay = (math.random(100, 500))
-						if RPM > 0.3 and RPM < 0.5 then
-							local backfire = math.random(#Config.Backfires)
-							local file = Config.Backfires[backfire]
-							TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
-							TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
-							activated = true
-							Wait(BackFireDelay)
-						else
-							activated = false
-						end
-					end
-				end
-			else
-				activated = false
-			end
-		else
-			activated = false
-			if not IsControlPressed(1, 71) and not IsControlPressed(1, 72) then
-				if antilag == true then
-					if IsPedInAnyVehicle(ped) then
-						local pedVehicle = GetVehiclePedIsIn(ped)
-						local pedPos = GetEntityCoords(ped)
-						local vehiclePos = GetEntityCoords(pedVehicle)
-						local RPM = GetVehicleCurrentRpm(GetVehiclePedIsIn(PlayerPedId()))
-						local AntiLagDelay = (math.random(25, 200))
-						if GetPedInVehicleSeat(pedVehicle, -1) == ped then
-							if RPM > 0.75 then
-								local vehicleModel = GetEntityModel(GetVehiclePedIsIn(PlayerPedId()))
+					if GetPedInVehicleSeat(pedVehicle, -1) == ped then
+						if not IsEntityInAir(pedVehicle) then
+							local vehicleModel = GetEntityModel(GetVehiclePedIsIn(PlayerPedId()))
+							local BackFireDelay = (math.random(100, 500))
+							if RPM > 0.3 and RPM < 0.5 then
 								local backfire = math.random(#Config.Backfires)
 								local file = Config.Backfires[backfire]
 								TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
 								TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
-								SetVehicleTurboPressure(pedVehicle, 25)
-								Wait(AntiLagDelay)
+								activated = true
+								Wait(BackFireDelay)
+							else
+								activated = false
 							end
 						end
-					else
-						antilag = false
+					end
+				else
+					activated = false
+				end
+			else
+				activated = false
+				if not IsControlPressed(1, 71) and not IsControlPressed(1, 72) then
+					if antilag == true then
+						if IsPedInAnyVehicle(ped) then
+							local pedVehicle = GetVehiclePedIsIn(ped)
+							local pedPos = GetEntityCoords(ped)
+							local vehiclePos = GetEntityCoords(pedVehicle)
+							local RPM = GetVehicleCurrentRpm(GetVehiclePedIsIn(PlayerPedId()))
+							local AntiLagDelay = (math.random(25, 200))
+							if GetPedInVehicleSeat(pedVehicle, -1) == ped then
+								if RPM > 0.75 then
+									local vehicleModel = GetEntityModel(GetVehiclePedIsIn(PlayerPedId()))
+									local backfire = math.random(#Config.Backfires)
+									local file = Config.Backfires[backfire]
+									TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
+									TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
+									SetVehicleTurboPressure(pedVehicle, 25)
+									Wait(AntiLagDelay)
+								end
+							end
+						else
+							antilag = false
+						end
 					end
 				end
 			end
-		end
-		if antilag then
-			local ped = PlayerPedId()
-			local pedVehicle = GetVehiclePedIsIn(ped)
-		
-			if pedVehicle ~= 0 then
-				local newGear = GetVehicleCurrentGear(pedVehicle)
-		
-				if newGear ~= currentGear then
-					currentGear = newGear
-					local backfire = math.random(#Config.Backfires)
-					local file = Config.Backfires[backfire]
-					TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
-					TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
-				end
-			else
-				if currentGear ~= 0 then
-					currentGear = 0
-				end
-			end
-		end
-		if IsControlJustReleased(1, Config.twoStepControl) then
-			if IsPedInAnyVehicle(ped, true) then
+			if antilag then
+				local ped = PlayerPedId()
 				local pedVehicle = GetVehiclePedIsIn(ped)
-				SetVehicleTurboPressure(pedVehicle, 25)
+			
+				if pedVehicle ~= 0 then
+					local newGear = GetVehicleCurrentGear(pedVehicle)
+			
+					if newGear ~= currentGear then
+						currentGear = newGear
+						local backfire = math.random(#Config.Backfires)
+						local file = Config.Backfires[backfire]
+						TriggerServerEvent("eff_flames", VehToNet(pedVehicle))
+						TriggerServerEvent('Sick-2StepSV:PlayWithinDistance', 25,file,1.0)
+					end
+				else
+					if currentGear ~= 0 then
+						currentGear = 0
+					end
+				end
+			end
+			if IsControlJustReleased(1, Config.twoStepControl) then
+				if IsPedInAnyVehicle(ped, true) then
+					local pedVehicle = GetVehiclePedIsIn(ped)
+					SetVehicleTurboPressure(pedVehicle, 25)
+				end
+			end
+			Wait(1)
+		end
+	end)
+end
+
+AddEventHandler("2step:Anti-lag", function()
+	local ped = PlayerPedId()
+	if not antilag then
+		local pedVehicle = GetVehiclePedIsIn(ped)
+		if IsPedInAnyVehicle(ped) then
+			local plate = GetVehicleNumberPlateText(pedVehicle)
+			print(plate)
+			local twostep = lib.callback.await('2step:Anti-lagCheck', 1000,plate)
+			print(twostep)
+			if twostep then
+				antilag = true
+				Start2StepLoop()
+				Notif(2, "Anti-Lag has been Enabled!")
+			else
+				Notif(3, 'Need 2Step Module In order to use!')
 			end
 		end
-		Wait(0)
+	else
+		antilag = false
+		Notif(2, "Anti-Lag has been Disabled!")
 	end
 end)
 
@@ -284,66 +292,66 @@ AddEventHandler('Sick-2StepCL:PlayWithinDistance', function(otherPlayerCoords, m
 	end
 end)
 
-
-exports('2step', function(data, slot)
-	exports.ox_inventory:useItem(data, function(data)
-		if data then
-			local ped = PlayerPedId()
-			local pedVehicle = GetVehiclePedIsIn(ped)
-			if not IsPedInAnyVehicle(ped, false) then 
-				Notif(3, 'You Need to be in a Vehicle!')
-				return 
-			else
-				print('Here 1')
-				local plate = GetVehicleNumberPlateText(pedVehicle)
-				if lib.progressBar({
-					duration = 5000,
-					label = 'Checking 2Step',
-					useWhileDead = false,
-					canCancel = true,
-					disable = {
-						move = true,
-						combat = true,
-						car = true,
-					}
-					}) 
-				then 
-					TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
-				else 
-					return
+if Config.UseOxInv then
+	exports('2step', function(data, slot)
+		exports.ox_inventory:useItem(data, function(data)
+			if data then
+				local ped = PlayerPedId()
+				local pedVehicle = GetVehiclePedIsIn(ped)
+				if not IsPedInAnyVehicle(ped, false) then 
+					Notif(3, 'You Need to be in a Vehicle!')
+					return 
+				else
+					local plate = GetVehicleNumberPlateText(pedVehicle)
+					if lib.progressBar({
+						duration = 5000,
+						label = 'Checking 2Step',
+						useWhileDead = false,
+						canCancel = true,
+						disable = {
+							move = true,
+							combat = true,
+							car = true,
+						}
+						}) 
+					then 
+						TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
+					else 
+						return
+					end
 				end
 			end
-		end
+		end)
 	end)
-end)
 
-exports('2step_checker', function(data, slot)
-	exports.ox_inventory:useItem(data, function(data)
-		if data then
-			local ped = PlayerPedId()
-			local pedVehicle = GetVehiclePedIsIn(ped)
-			if not IsPedInAnyVehicle(ped, false) then 
-				Notif(3, 'You Need to be in a Vehicle!')
-				return 
-			else
-				local plate = GetVehicleNumberPlateText(pedVehicle)
-				if lib.progressBar({
-					duration = 5000,
-					label = 'Checking 2Step',
-					useWhileDead = false,
-					canCancel = true,
-					disable = {
-						move = true,
-						combat = true,
-						car = true,
-					}
-					}) 
-				then 
-					TriggerServerEvent('Sick-2Step:Police2Step', plate)
-				else 
-					return
+	exports('2step_checker', function(data, slot)
+		exports.ox_inventory:useItem(data, function(data)
+			if data then
+				local ped = PlayerPedId()
+				local pedVehicle = GetVehiclePedIsIn(ped)
+				if not IsPedInAnyVehicle(ped, false) then 
+					Notif(3, 'You Need to be in a Vehicle!')
+					return 
+				else
+					local plate = GetVehicleNumberPlateText(pedVehicle)
+					if lib.progressBar({
+						duration = 5000,
+						label = 'Checking 2Step',
+						useWhileDead = false,
+						canCancel = true,
+						disable = {
+							move = true,
+							combat = true,
+							car = true,
+						}
+						}) 
+					then 
+						TriggerServerEvent('Sick-2Step:Police2Step', plate)
+					else 
+						return
+					end
 				end
 			end
-		end
+		end)
 	end)
-end)
+end
