@@ -5,14 +5,14 @@
 ]]
 RegisterNetEvent("2step:Anti-lag")
 RegisterNetEvent("c_eff_flames")
-
+local bones = {}
 local activated = false
 local antilag = false
 local AntilagDisplay = false
 local currentGear = 0
 
 exports.ox_inventory:displayMetadata({
-    owner = 'Original Plate',
+    owner = 'Original Owner',
 })
 
 local function Start2StepLoop()
@@ -126,11 +126,30 @@ AddEventHandler("2step:Anti-lag", function()
 	end
 end)
 
-AddEventHandler("c_eff_flames", function(c_veh)
-	for _,bones in pairs(Config.p_flame_location) do
-		UseParticleFxAssetNextCall(Config.p_flame_particle_asset)
-		createdPart = StartParticleFxLoopedOnEntityBone(Config.p_flame_particle, NetToVeh(c_veh), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, GetEntityBoneIndexByName(NetToVeh(c_veh), bones), Config.p_flame_size, 0.0, 0.0, 0.0)
-		StopParticleFxLooped(createdPart, 1)
+for i = 1, 16 do
+    if i == 1 then
+        table.insert(bones, "exhaust")
+    else
+        table.insert(bones, "exhaust_"..tostring(i))
+    end
+end
+
+AddEventHandler("c_eff_flames", function(vehicle)
+	print("Vehicle: "..vehicle)
+	for _,boneName in pairs(Config.p_flame_location) do
+		local boneIndex = GetEntityBoneIndexByName(vehicle, boneName )
+		print('BoneIndex is: '..boneIndex)
+        if boneIndex ~= -1 then
+			print('BoneIndex is 2: '..boneIndex)
+            local fireOffset = GetOffsetFromEntityGivenWorldCoords(vehicle, GetWorldPositionOfEntityBone(vehicle, boneIndex))
+            UseParticleFxAssetNextCall('core')
+            StartNetworkedParticleFxNonLoopedOnEntity('veh_backfire', vehicle, fireOffset, 0.0, 0.0, 0.0, 1.3, false, false, false)
+		else
+			print('BoneIndex is 3: '..boneIndex)
+			UseParticleFxAssetNextCall(Config.p_flame_particle_asset)
+			createdPart = StartParticleFxLoopedOnEntityBone(Config.p_flame_particle,vehicle, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, GetEntityBoneIndexByName(NetToVeh(c_veh), bones), Config.p_flame_size, 0.0, 0.0, 0.0)
+			StopParticleFxLooped(createdPart, 1)
+		end
 	end
 end)
 
@@ -292,66 +311,66 @@ AddEventHandler('Sick-2StepCL:PlayWithinDistance', function(otherPlayerCoords, m
 	end
 end)
 
-if Config.UseOxInv then
-	exports('2step', function(data, slot)
-		exports.ox_inventory:useItem(data, function(data)
-			if data then
-				local ped = PlayerPedId()
-				local pedVehicle = GetVehiclePedIsIn(ped)
-				if not IsPedInAnyVehicle(ped, false) then 
-					Notif(3, 'You Need to be in a Vehicle!')
-					return 
-				else
-					local plate = GetVehicleNumberPlateText(pedVehicle)
-					if lib.progressBar({
-						duration = 5000,
-						label = 'Checking 2Step',
-						useWhileDead = false,
-						canCancel = true,
-						disable = {
-							move = true,
-							combat = true,
-							car = true,
-						}
-						}) 
-					then 
-						TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
-					else 
-						return
-					end
-				end
-			end
-		end)
-	end)
 
-	exports('2step_checker', function(data, slot)
-		exports.ox_inventory:useItem(data, function(data)
-			if data then
-				local ped = PlayerPedId()
-				local pedVehicle = GetVehiclePedIsIn(ped)
-				if not IsPedInAnyVehicle(ped, false) then 
-					Notif(3, 'You Need to be in a Vehicle!')
-					return 
-				else
-					local plate = GetVehicleNumberPlateText(pedVehicle)
-					if lib.progressBar({
-						duration = 5000,
-						label = 'Checking 2Step',
-						useWhileDead = false,
-						canCancel = true,
-						disable = {
-							move = true,
-							combat = true,
-							car = true,
-						}
-						}) 
-					then 
-						TriggerServerEvent('Sick-2Step:Police2Step', plate)
-					else 
-						return
-					end
+exports('2step', function(data, slot)
+	exports.ox_inventory:useItem(data, function(data)
+		if data then
+			local ped = PlayerPedId()
+			local pedVehicle = GetVehiclePedIsIn(ped)
+			if not IsPedInAnyVehicle(ped, false) then 
+				Notif(3, 'You Need to be in a Vehicle!')
+				return 
+			else
+				print('Here 1')
+				local plate = GetVehicleNumberPlateText(pedVehicle)
+				if lib.progressBar({
+					duration = 5000,
+					label = 'Checking 2Step',
+					useWhileDead = false,
+					canCancel = true,
+					disable = {
+						move = true,
+						combat = true,
+						car = true,
+					}
+					}) 
+				then 
+					TriggerServerEvent('Sick-2Step:Set2StepVeh', plate)
+				else 
+					return
 				end
 			end
-		end)
+		end
 	end)
-end
+end)
+
+exports('2step_checker', function(data, slot)
+	exports.ox_inventory:useItem(data, function(data)
+		if data then
+			local ped = PlayerPedId()
+			local pedVehicle = GetVehiclePedIsIn(ped)
+			if not IsPedInAnyVehicle(ped, false) then 
+				Notif(3, 'You Need to be in a Vehicle!')
+				return 
+			else
+				local plate = GetVehicleNumberPlateText(pedVehicle)
+				if lib.progressBar({
+					duration = 5000,
+					label = 'Checking 2Step',
+					useWhileDead = false,
+					canCancel = true,
+					disable = {
+						move = true,
+						combat = true,
+						car = true,
+					}
+					}) 
+				then 
+					TriggerServerEvent('Sick-2Step:Police2Step', plate)
+				else 
+					return
+				end
+			end
+		end
+	end)
+end)

@@ -22,3 +22,9 @@ files {
     'html/index.html',
     'html/sounds/*.ogg',
 }
+
+escrow_ignore {
+    'client/*.lua',
+    'server/*.lua',
+    'shared/*.lua'
+}
